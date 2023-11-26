@@ -6,60 +6,6 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
-// Classe para representar um processo
-class Processo {
-    private String nome;
-    private int tempoTotal;
-    private int tempoRestante;
-    private String status;
-
-    // Construtor para inicializar um processo
-    public Processo(String nome, int tempoTotal) {
-        this.nome = nome;
-        this.tempoTotal = tempoTotal;
-        this.tempoRestante = tempoTotal;
-        this.status = "Pronto";
-    }
-
-    // Métodos para obter informações sobre o processo
-    public String getNome() {
-        return nome;
-    }
-
-    public int getTempoTotal() {
-        return tempoTotal;
-    }
-
-    public int getTempoRestante() {
-        return tempoRestante;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    // Verifica se o processo está encerrado
-    public boolean estaEncerrado() {
-        return tempoRestante == 0;
-    }
-
-    // Executa o processo por um quantum de tempo
-    public int executar(int quantum) {
-        if (tempoRestante <= quantum) {
-            tempoRestante = 0;
-            status = "Encerrado";
-            return 0;
-        } else {
-            tempoRestante -= quantum;
-            return tempoRestante;
-        }
-    }
-}
-
 // Classe principal do escalonador
 public class Escalonador {
     private static List<Processo> tabelaProcessos = new ArrayList<>();
@@ -170,10 +116,28 @@ public class Escalonador {
             }
         }
 
+        // Verifica se o nome já está em uso e adiciona sufixo numérico, se necessário
+        int sufixo = 1;
+        String nomeOriginal = nome;
+        while (nomeJaEstaEmUso(nome)) {
+            nome = nomeOriginal + sufixo;
+            sufixo++;
+        }
+
         Processo novoProcesso = new Processo(nome, tempoTotal);
         tabelaProcessos.add(novoProcesso);
         System.out.println("Processo '" + nome + "' criado e pronto.");
         ler.nextLine();
+    }
+
+    // Método para verificar se o nome do processo já está em uso
+    private static boolean nomeJaEstaEmUso(String nome) {
+        for (Processo processo : tabelaProcessos) {
+            if (processo.getNome().equals(nome)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // Método para executar os processos
@@ -266,6 +230,60 @@ public class Escalonador {
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+}
+
+// Classe para representar um processo
+class Processo {
+    private String nome;
+    private int tempoTotal;
+    private int tempoRestante;
+    private String status;
+
+    // Construtor para inicializar um processo
+    public Processo(String nome, int tempoTotal) {
+        this.nome = nome;
+        this.tempoTotal = tempoTotal;
+        this.tempoRestante = tempoTotal;
+        this.status = "Pronto";
+    }
+
+    // Métodos para obter informações sobre o processo
+    public String getNome() {
+        return nome;
+    }
+
+    public int getTempoTotal() {
+        return tempoTotal;
+    }
+
+    public int getTempoRestante() {
+        return tempoRestante;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    // Verifica se o processo está encerrado
+    public boolean estaEncerrado() {
+        return tempoRestante == 0;
+    }
+
+    // Executa o processo por um quantum de tempo
+    public int executar(int quantum) {
+        if (tempoRestante <= quantum) {
+            tempoRestante = 0;
+            status = "Encerrado";
+            return 0;
+        } else {
+            tempoRestante -= quantum;
+            return tempoRestante;
         }
     }
 }
